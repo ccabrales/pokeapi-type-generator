@@ -1,0 +1,26 @@
+{
+  "name": "pokeapi-type-generator",
+  "version": "1.0.0",
+  "description": "Generate TypeScript types from PokeAPI docs",
+  "main": "index.js",
+  "author": "ccabrales",
+  "homepage": "https://github.com/ccabrales/pokeapi-type-generator",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ccabrales/pokeapi-type-generator.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "start": "ts-node index.ts",
+    "start:js": "yarn build && node ./build/index.js"
+  },
+  "devDependencies": {
+    "prettier": "^1.16.4",
+    "ts-node": "^8.0.3",
+    "tslint": "^5.14.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.3333"
+  }
+}
