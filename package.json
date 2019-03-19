@@ -12,15 +12,23 @@
   },
   "scripts": {
     "build": "tsc",
-    "lint": "tslint -c tslint.json src/**/*.ts",
-    "start": "ts-node index.ts",
+    "clean": "rimraf build pokeapi-docs-dl",
+    "lint": "tslint -c tslint.json ./**/*.ts",
+    "prebuild": "yarn clean",
+    "prestart": "yarn clean",
+    "start": "ts-node src/index.ts",
     "start:js": "yarn build && node ./build/index.js"
   },
   "devDependencies": {
+    "@types/node": "^11.11.3",
     "prettier": "^1.16.4",
+    "rimraf": "^2.6.3",
     "ts-node": "^8.0.3",
     "tslint": "^5.14.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "node-svn-ultimate": "^1.2.0"
   }
 }

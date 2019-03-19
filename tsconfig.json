@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": false,
-    "lib": ["es6", "es2017.object"],
+    "lib": ["es6", "es2017.object", "dom"],
     "noImplicitAny": true,
-    "outDir": "build",
+    "outDir": "./build",
     "removeComments": true,
     "sourceMap": true,
     "strictNullChecks": true,
