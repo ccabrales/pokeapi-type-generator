@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf build pokeapi-docs-dl",
-    "lint": "tslint -c tslint.json ./**/*.ts",
+    "lint": "tslint -c tslint.json src/**/*.ts",
     "prebuild": "yarn clean",
     "prestart": "yarn clean",
     "start": "ts-node src/index.ts",

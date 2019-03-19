@@ -1,19 +1,23 @@
+import * as path from "path";
+import { removeFilesWithoutExt } from "./files-utils";
+import { generateTypes } from "./parse";
+
 const svnUltimate = require("node-svn-ultimate");
 
 // Retrieve JSON files from the docs repo https://github.com/PokeAPI/pokeapi.co/tree/master/src/docs
 const DOCS_FOLDER = "https://github.com/PokeAPI/pokeapi.co/trunk/src/docs";
-const FILE_EXT = ".json";
+const OUTPUT_DOCS = path.join(__dirname, "../pokeapi-docs-dl/");
 
 svnUltimate.commands.export(
   DOCS_FOLDER,
-  "./pokeapi-docs-dl",
+  OUTPUT_DOCS,
   undefined,
   (err: Error) => {
     if (err) {
-      console.log("Error downloading doc files:", err.message);
+      throw err;
     } else {
-      // TODO: Only keep .json files
-      // TODO: Begin parsing the files and building types
+      removeFilesWithoutExt(OUTPUT_DOCS);
+      generateTypes(OUTPUT_DOCS);
     }
   }
 );
