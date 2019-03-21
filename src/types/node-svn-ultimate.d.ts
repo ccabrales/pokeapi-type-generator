@@ -14,7 +14,7 @@ declare module "node-svn-ultimate" {
     "config-option"?: string[];
   }
 
-  export type Callback = Function;
+  export type Callback = Function; // tslint:disable-line
 
   export const commands: {
     add: (files: string | string[], options?: Options, cb?: Callback) => void;
