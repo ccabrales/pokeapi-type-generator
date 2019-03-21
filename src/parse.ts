@@ -1,26 +1,24 @@
 import * as fs from "fs";
 import * as path from "path";
+import { ExtendsMap } from "./extends-map";
 
 enum BasicModelType {
+  Boolean = "boolean",
   Integer = "integer",
   String = "string"
 }
 
-enum NestedModelType {
+export enum NestedModelType {
   List = "list",
   NamedAPIResource = "NamedAPIResource",
   APIResource = "APIResource"
 }
 
-type ExtendingModelTypes =
-  | NestedModelType.APIResource
-  | NestedModelType.NamedAPIResource;
-
 interface Doc {
   name: string;
   description: string;
   exampleRequest: string;
-  exampleResponse: Object;
+  exampleResponse: object;
   responseModels: ResponseModel[];
 }
 
@@ -29,15 +27,15 @@ interface ResponseModel {
   fields: Field[];
 }
 
-interface Field {
+export interface Field {
   name: string;
   description: string;
-  type: BasicModelType | FieldType;
+  type: BasicModelType | FieldType | string;
 }
 
-interface FieldType {
+export interface FieldType {
   type: NestedModelType;
-  of: string;
+  of: string | FieldType;
 }
 
 type DocFiles = Doc[];
@@ -53,14 +51,7 @@ type OutputFormat = Record<string, Record<string, OutputItemFormat>>;
 
 const TYPE_OUTPUT_DIR = path.join(__dirname, "../generated-types");
 
-/**
- * Map that keeps track of which types extend NamedAPIResource
- * or APIResource. Should be updated when parsing each model's fields.
- */
-const typeExtendsMap: Record<ExtendingModelTypes, Set<string>> = {
-  [NestedModelType.NamedAPIResource]: new Set<string>(),
-  [NestedModelType.APIResource]: new Set<string>()
-};
+const extendsMap = new ExtendsMap();
 
 /**
  * Return the correct type for the given model type.
@@ -71,10 +62,17 @@ function getTypeFromModel(type: Field["type"]): string {
     return "number";
   } else if (type === BasicModelType.String) {
     return "string";
+  } else if (type === BasicModelType.Boolean) {
+    return "boolean";
+  } else if (typeof type === "string") {
+    return type;
   } else if (type.type === NestedModelType.List) {
+    if (typeof type.of === "object") {
+      return `${type.of.of}[]`;
+    }
     return `${type.of}[]`;
   } else {
-    return type.of;
+    return typeof type.of === "object" ? (type.of.of as string) : type.of;
   }
 }
 
@@ -90,9 +88,8 @@ export function generateTypes(dir: string) {
     res[filename] = generatedTypes;
     return res;
   }, {});
-  //TODO: make a pass through all types and check for extends property in typeExtendsMap
   const outputWithExtends = addExtendsProperty(outputTypes);
-  //TODO: Output types -- look at how dts-gen outputs types to files
+  // TODO: Output types -- look at how dts-gen outputs types to files
 }
 
 /**
@@ -121,15 +118,7 @@ function buildInterface(model: ResponseModel): OutputItemFormat {
   const properties = model.fields.reduce<OutputItemFormat["properties"]>(
     (res, field) => {
       res[field.name] = getTypeFromModel(field.type);
-      // If the field extends an api resource, add it to the proper set
-      if (
-        typeof field.type === "object" &&
-        field.type.type !== NestedModelType.List
-      ) {
-        // Need to trim because of bad docs files with extra spaces
-        const trimmedType: ExtendingModelTypes = field.type.type.trim() as ExtendingModelTypes;
-        typeExtendsMap[trimmedType].add(field.name);
-      }
+      extendsMap.addFieldToExtendsMap(field);
       return res;
     },
     {}
@@ -147,21 +136,22 @@ function buildInterface(model: ResponseModel): OutputItemFormat {
  * @param builtOutput
  */
 function addExtendsProperty(builtOutput: OutputFormat): OutputFormat {
-  // TODO: iterate over all keys and update the extends property as needed -- use extendsWhichResource
-  return builtOutput;
-}
-
-/**
- * Returns whether or not the passed name extends an
- * API resource.
- * @param name
- */
-function extendsWhichResource(name: string): ExtendingModelTypes | undefined {
-  if (typeExtendsMap[NestedModelType.NamedAPIResource].has(name)) {
-    return NestedModelType.NamedAPIResource;
-  }
-
-  return typeExtendsMap[NestedModelType.APIResource].has(name)
-    ? NestedModelType.APIResource
-    : undefined;
+  const withExtends = Object.entries(builtOutput).reduce<OutputFormat>(
+    (res, [key, val]) => {
+      const newVal = Object.entries(val).reduce<
+        Record<string, OutputItemFormat>
+      >((valRes, [valKey, valVal]) => {
+        const updatedModelVal = {
+          ...valVal,
+          extends: extendsMap.extendsWhichResource(valKey)
+        };
+        valRes[valKey] = updatedModelVal;
+        return valRes;
+      }, {});
+      res[key] = newVal;
+      return res;
+    },
+    {}
+  );
+  return withExtends;
 }
