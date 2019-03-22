@@ -115,6 +115,11 @@ diff@^3.1.0, diff@^3.2.0:
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
 
+dts-dom@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/dts-dom/-/dts-dom-3.1.1.tgz#1e706020f992e1d8d4e402cd3b4506b13fffaa8d"
+  integrity sha512-ogQV2DPcph6Ku+/ceDd8XsF3QqTCy/bhPqBB8/1ZwbBzi3QKtWaVYZHT4pgqF7wN9/PRehmRJTqz+McKXq3W7w==
+
 escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"

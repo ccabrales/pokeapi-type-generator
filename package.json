@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf build pokeapi-docs-dl",
+    "clean": "rimraf build pokeapi-docs-dl generated-types",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "prebuild": "yarn clean",
     "prestart": "yarn clean",
@@ -29,6 +29,7 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
+    "dts-dom": "^3.1.1",
     "node-svn-ultimate": "^1.2.0"
   }
 }

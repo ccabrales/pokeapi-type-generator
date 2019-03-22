@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { ExtendsMap } from "./extends-map";
+import { buildOutput } from "./build-output";
 
 enum BasicModelType {
   Boolean = "boolean",
@@ -40,16 +41,15 @@ export interface FieldType {
 
 type DocFiles = Doc[];
 
-interface OutputItemFormat {
+export interface OutputItemFormat {
   name: string;
   extends?: NestedModelType.APIResource | NestedModelType.NamedAPIResource;
   properties: Record<string, string>;
 }
 
 /** Mapping of filename to map of type name to properties */
-type OutputFormat = Record<string, Record<string, OutputItemFormat>>;
-
-const TYPE_OUTPUT_DIR = path.join(__dirname, "../generated-types");
+export type PropertyMapOutput = Record<string, OutputItemFormat>;
+export type ParsedOutput = Record<string, PropertyMapOutput>;
 
 const extendsMap = new ExtendsMap();
 
@@ -82,14 +82,14 @@ function getTypeFromModel(type: Field["type"]): string {
  * @param dir
  */
 export function generateTypes(dir: string) {
-  const outputTypes = fs.readdirSync(dir).reduce<OutputFormat>((res, file) => {
+  const outputTypes = fs.readdirSync(dir).reduce<ParsedOutput>((res, file) => {
     const filename = path.basename(dir + file, path.extname(file));
     const generatedTypes = parseFile(dir + file);
     res[filename] = generatedTypes;
     return res;
   }, {});
   const outputWithExtends = addExtendsProperty(outputTypes);
-  // TODO: Output types -- look at how dts-gen outputs types to files
+  buildOutput(outputWithExtends);
 }
 
 /**
@@ -135,8 +135,8 @@ function buildInterface(model: ResponseModel): OutputItemFormat {
  * the extends property if needed.
  * @param builtOutput
  */
-function addExtendsProperty(builtOutput: OutputFormat): OutputFormat {
-  const withExtends = Object.entries(builtOutput).reduce<OutputFormat>(
+function addExtendsProperty(builtOutput: ParsedOutput): ParsedOutput {
+  const withExtends = Object.entries(builtOutput).reduce<ParsedOutput>(
     (res, [key, val]) => {
       const newVal = Object.entries(val).reduce<
         Record<string, OutputItemFormat>
