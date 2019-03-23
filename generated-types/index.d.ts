@@ -401,7 +401,7 @@ declare module 'pokeapi-js-wrapper' {
         is_main_series: boolean;
         generation: Generation;
         names: Name[];
-        effect_entries: names[];
+        effect_entries: VerboseEffect[];
         effect_changes: AbilityEffectChange[];
         flavor_text_entries: AbilityFlavorText[];
         pokemon: AbilityPokemon[];
@@ -427,7 +427,7 @@ declare module 'pokeapi-js-wrapper' {
     export interface Characteristic extends APIResource{
         id: number;
         gene_modulo: number;
-        possible_values: integer[];
+        possible_values: number[];
     }
 
     export interface EggGroup extends NamedAPIResource{

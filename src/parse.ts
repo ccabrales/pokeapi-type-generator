@@ -58,6 +58,24 @@ const extendsMap = new ExtendsMap();
  * @param type
  */
 function getTypeFromModel(type: Field["type"]): string {
+  const typeIfBasic = getTypeName(type);
+  if (typeIfBasic) {
+    return typeIfBasic;
+  } else if (typeof type === "string") {
+    return type;
+  } else if (type.type === NestedModelType.List) {
+    if (typeof type.of === "object") {
+      return `${getTypeName(type.of.of)}[]`;
+    }
+    return `${getTypeName(type.of)}[]`;
+  } else {
+    return typeof type.of === "object"
+      ? (getTypeName(type.of.of) as string)
+      : (getTypeName(type.of) as string);
+  }
+}
+
+function getTypeName(type: Field["type"]): string | undefined {
   if (type === BasicModelType.Integer) {
     return "number";
   } else if (type === BasicModelType.String) {
@@ -65,14 +83,11 @@ function getTypeFromModel(type: Field["type"]): string {
   } else if (type === BasicModelType.Boolean) {
     return "boolean";
   } else if (typeof type === "string") {
-    return type;
-  } else if (type.type === NestedModelType.List) {
-    if (typeof type.of === "object") {
-      return `${type.of.of}[]`;
+    // Docs incorrectly list a type for "Ability" - effect_entries property, so we can fix it here
+    if (type === "names") {
+      return "VerboseEffect";
     }
-    return `${type.of}[]`;
-  } else {
-    return typeof type.of === "object" ? (type.of.of as string) : type.of;
+    return type;
   }
 }
 
