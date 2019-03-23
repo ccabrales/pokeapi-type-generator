@@ -22,3 +22,5 @@ Generate Typescript types for each resource in [PokeAPI](https://pokeapi.co/docs
 - Resources `MoveDamageClass` and `MoveMetaData` appear as property types, but are not listed in the docs
   - You will need to define `MoveDamageClass` as `NamedAPIResource`
   - You will need to define `MoveMetaData` according to the `meta` property in the `Moves` [resource](https://pokeapi.co/docs/v2.html#moves)
+- Null/optional types
+  - Unfortunately the docs do not provide any reliable information about when a field could be null or not. Without some enhancements to the docs, I'm not sure how much can be done to add nullability.
